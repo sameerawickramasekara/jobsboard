@@ -1,4 +1,4 @@
-package com.sameera.jobsboard.playground
+package com.sameera.playground
 
 object SimplePlayground {
 

@@ -4,7 +4,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 lazy val rockthejvm    = "com.rockthejvm"
 lazy val scala3Version = "3.2.1"
 
-lazy val circeVersion  = "0.14.0"
+lazy val circeVersion               = "0.14.0"
 lazy val catsEffectVersion          = "3.3.14"
 lazy val http4sVersion              = "0.23.15"
 lazy val doobieVersion              = "1.0.0-RC1"
@@ -45,5 +45,5 @@ lazy val server = (project in file("."))
       "org.testcontainers" % "testcontainers"                % testContainerVersion       % Test,
       "org.testcontainers" % "postgresql"                    % testContainerVersion       % Test,
       "ch.qos.logback"     % "logback-classic"               % logbackVersion             % Test
-    ),
+    )
   )

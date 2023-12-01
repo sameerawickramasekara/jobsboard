@@ -2,9 +2,8 @@ package com.sameera.jobsboard.foundations
 
 import cats.effect.IO.FlatMap
 
-/**
- * Cats crash course, demonstrating most important parts
- */
+/** Cats crash course, demonstrating most important parts
+  */
 object Cats {
 
   /*
@@ -14,9 +13,9 @@ object Cats {
   - FlatMap
   - Monad
   - ApplicativeError/MonadError
-  */
+   */
 
-  //functor - describes mappable structures
+  // functor - describes mappable structures
   trait MyFunctor[F[_]] {
     def map[A, B](initialValue: F[A])(f: A => B): F[B]
   }
@@ -26,7 +25,7 @@ object Cats {
   import cats.instances.list.* // <- Functor instances for list is here
 
   val listFunctor: Functor[List] = Functor[List]
-  val mappedList = listFunctor.map(List(1, 2, 3))(_ + 1)
+  val mappedList                 = listFunctor.map(List(1, 2, 3))(_ + 1)
 
   // verbose way of using map
   def increment[F[_]](container: F[Int])(using functor: Functor[F]): F[Int] =
@@ -40,7 +39,7 @@ object Cats {
   def increment_v2[F[_]](container: F[Int])(using functor: Functor[F]): F[Int] =
     container.map(_ + 1)
 
-  //Applicative - pure wrap existing values into "wrapper" values
+  // Applicative - pure wrap existing values into "wrapper" values
 
   trait MyApplicative[F[_]] extends Functor[F] {
     def pure[A](value: A): F[A]
@@ -49,33 +48,40 @@ object Cats {
   import cats.Applicative
 
   val applicativeList: Applicative[List] = Applicative[List]
-  val aSimpleList: Seq[Int] = applicativeList.pure(42) // <- gives us a List with single value 42, here the wrapper type is List
+  val aSimpleList: Seq[Int] = applicativeList.pure(
+    42
+  ) // <- gives us a List with single value 42, here the wrapper type is List
 
   import cats.syntax.applicative.*
 
-  val aSimpleList_v2 = 42.pure[List] // now pure is an extension method for simple types that can wrap into wrapper types
+  val aSimpleList_v2 =
+    42.pure[
+      List
+    ] // now pure is an extension method for simple types that can wrap into wrapper types
 
-  //flatMap
+  // flatMap
   trait MyFlatMap[F[_]] extends Functor[F] {
     def flatMap[A, B](initialValue: F[A])(f: A => F[B]): F[B]
   }
 
   import cats.FlatMap
 
-  val flatMapList = FlatMap[List]
+  val flatMapList    = FlatMap[List]
   val flatMappedList = flatMapList.flatMap(List(1, 2, 3))(x => List(x, x + 1))
 
   import cats.syntax.flatMap.*
 
-  def crossProduct[F[_], A, B](containerA: F[A], containerB: F[B])(using flatMapper: FlatMap[F]): F[(A, B)] =
+  def crossProduct[F[_], A, B](containerA: F[A], containerB: F[B])(using
+      flatMapper: FlatMap[F]
+  ): F[(A, B)] =
     containerA.flatMap(a => containerB.map(b => (a, b)))
 
-  def crossProductV2[F[_] : FlatMap, A, B](containerA: F[A], containerB: F[B]): F[(A, B)] = for {
+  def crossProductV2[F[_]: FlatMap, A, B](containerA: F[A], containerB: F[B]): F[(A, B)] = for {
     a <- containerA
     b <- containerB
   } yield (a, b)
 
-  //Monad - applicative + flatMap
+  // Monad - applicative + flatMap
 
   trait MyMonad[F[_]] extends Applicative[F] with FlatMap[F] {
     override def map[A, B](fa: F[A])(f: A => B): F[B] = flatMap(fa)(a => pure(f(a)))
@@ -85,7 +91,7 @@ object Cats {
 
   val monadList = Monad[List]
 
-  def crossProductV3[F[_] : Monad, A, B](containerA: F[A], containerB: F[B]): F[(A, B)] = for {
+  def crossProductV3[F[_]: Monad, A, B](containerA: F[A], containerB: F[B]): F[(A, B)] = for {
     a <- containerA
     b <- containerB
   } yield (a, b)
@@ -95,7 +101,9 @@ object Cats {
   // because of this we have ApplicativeError -  computations that can fail
 
   trait MyApplicativeError[F[_], E] extends Applicative[F] {
-    def raiseError[A](error: E): F[A] // here we need a wrapper type A that can store the error value if it occures
+    def raiseError[A](
+        error: E
+    ): F[A] // here we need a wrapper type A that can store the error value if it occures
     // Try.either good candidates,
     // with either we can have the error channel as something other than throwable
 
@@ -103,8 +111,8 @@ object Cats {
     // cats.ApplicativeThrow <- specialized for throwable
 
     type ErrorOr[A] = Either[String, A]
-    val applicativeEither = ApplicativeError[ErrorOr, String]
-    val desiredValue: ErrorOr[Int] = applicativeEither.pure(42)
+    val applicativeEither            = ApplicativeError[ErrorOr, String]
+    val desiredValue: ErrorOr[Int]   = applicativeEither.pure(42)
     val undesiredValue: ErrorOr[Int] = applicativeEither.raiseError("something bad happened")
 
     import cats.syntax.applicativeError.*
@@ -119,8 +127,5 @@ object Cats {
 
   }
 
-  def main(args: Array[String]): Unit = {
-
-  }
+  def main(args: Array[String]): Unit = {}
 }
-
