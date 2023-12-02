@@ -6,6 +6,7 @@ import com.sameera.jobsboard.config.*
 import com.sameera.jobsboard.config.syntax.*
 import cats.implicits.*
 import com.sameera.jobsboard.foundations.Http4s.courseRoutes
+import com.sameera.jobsboard.http.HttpApi
 import com.sameera.jobsboard.http.routes.HealthRoutes
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -28,7 +29,7 @@ object Application extends IOApp.Simple {
       .default[IO]
       .withHost(config.host)
       .withPort(config.port)
-      .withHttpApp(HealthRoutes[IO].routes.orNotFound)
+      .withHttpApp(HttpApi[IO].endpoints.orNotFound)
       .build
       .use(_ => IO.println("Server ready") *> IO.never)
   }
