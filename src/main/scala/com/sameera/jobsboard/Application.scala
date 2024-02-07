@@ -16,13 +16,17 @@ import org.http4s.headers.Origin.Host
 import org.http4s.server.Router
 import pureconfig.ConfigSource
 import pureconfig.error.ConfigReaderException
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 /** 1- Add plain health endpoint 2 - Add minimal configuration 3 - basic http server layout
   */
 
 object Application extends IOApp.Simple {
 
-  val configSource = ConfigSource.default.load[EmberConfig]
+//  val configSource = ConfigSource.default.load[EmberConfig]
+
+  given logger:Logger[IO] = Slf4jLogger.getLogger[IO]
 
   override def run: IO[Unit] = ConfigSource.default.loadF[IO, EmberConfig].flatMap { config =>
     EmberServerBuilder

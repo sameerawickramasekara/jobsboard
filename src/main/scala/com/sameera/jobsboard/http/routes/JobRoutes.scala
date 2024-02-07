@@ -9,14 +9,16 @@ import org.http4s.dsl.impl.*
 import org.http4s.server.*
 import cats.*
 import cats.implicits.*
+import org.typelevel.log4cats.Logger
 import cats.effect.*
 import com.sameera.jobsboard.domain.job.*
 import com.sameera.jobsboard.http.responses.FailureResponse
 
+
 import scala.collection.mutable
 import java.util.UUID
 
-class JobRoutes[F[_]: Concurrent] private extends Http4sDsl[F] {
+class JobRoutes[F[_]: Concurrent: Logger] private extends Http4sDsl[F] {
 
   // database
   private val database = mutable.Map[UUID, Job]()
@@ -44,11 +46,16 @@ class JobRoutes[F[_]: Concurrent] private extends Http4sDsl[F] {
     active = true
   ).pure[F]
 
+  import com.sameera.jobsboard.logging.syntax.*
+
   private val createJobRoute: HttpRoutes[F] = HttpRoutes.of[F] {
     case req @ POST -> Root / "create" =>
       for {
-        jobInfo <- req.as[JobInfo]
+        _ <- Logger[F].info("Trying to add job")
+        jobInfo <- req.as[JobInfo].logError(error => s"Error wile parsing ${error}")
+        _ <- Logger[F].info(s"parsed job info ${jobInfo}")
         job     <- createJob(jobInfo)
+        _ <- Logger[F].info(s"Created job ${job}")
         resp    <- Created(job.id)
       } yield resp
   }
@@ -87,5 +94,5 @@ class JobRoutes[F[_]: Concurrent] private extends Http4sDsl[F] {
 }
 
 object JobRoutes {
-  def apply[F[_]: Concurrent] = new JobRoutes[F]
+  def apply[F[_]: Concurrent: Logger] = new JobRoutes[F]
 }
