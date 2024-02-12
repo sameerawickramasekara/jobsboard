@@ -5,7 +5,6 @@ import cats.effect.{IO, IOApp}
 import com.sameera.jobsboard.config.*
 import com.sameera.jobsboard.config.syntax.*
 import cats.implicits.*
-import com.sameera.jobsboard.foundations.Http4s.courseRoutes
 import com.sameera.jobsboard.http.HttpApi
 import com.sameera.jobsboard.http.routes.HealthRoutes
 import org.http4s.HttpRoutes
@@ -26,7 +25,7 @@ object Application extends IOApp.Simple {
 
 //  val configSource = ConfigSource.default.load[EmberConfig]
 
-  given logger:Logger[IO] = Slf4jLogger.getLogger[IO]
+  given logger: Logger[IO] = Slf4jLogger.getLogger[IO]
 
   override def run: IO[Unit] = ConfigSource.default.loadF[IO, EmberConfig].flatMap { config =>
     EmberServerBuilder

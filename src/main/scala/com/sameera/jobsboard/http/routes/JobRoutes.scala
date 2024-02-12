@@ -14,7 +14,6 @@ import cats.effect.*
 import com.sameera.jobsboard.domain.job.*
 import com.sameera.jobsboard.http.responses.FailureResponse
 
-
 import scala.collection.mutable
 import java.util.UUID
 
@@ -51,11 +50,11 @@ class JobRoutes[F[_]: Concurrent: Logger] private extends Http4sDsl[F] {
   private val createJobRoute: HttpRoutes[F] = HttpRoutes.of[F] {
     case req @ POST -> Root / "create" =>
       for {
-        _ <- Logger[F].info("Trying to add job")
+        _       <- Logger[F].info("Trying to add job")
         jobInfo <- req.as[JobInfo].logError(error => s"Error wile parsing ${error}")
-        _ <- Logger[F].info(s"parsed job info ${jobInfo}")
+        _       <- Logger[F].info(s"parsed job info ${jobInfo}")
         job     <- createJob(jobInfo)
-        _ <- Logger[F].info(s"Created job ${job}")
+        _       <- Logger[F].info(s"Created job ${job}")
         resp    <- Created(job.id)
       } yield resp
   }

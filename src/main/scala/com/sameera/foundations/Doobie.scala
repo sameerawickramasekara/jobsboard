@@ -1,4 +1,4 @@
-package com.sameera.jobsboard.foundations
+package com.sameera.foundations
 
 import cats.effect.{IO, IOApp, MonadCancelThrow}
 import doobie.util.transactor.Transactor

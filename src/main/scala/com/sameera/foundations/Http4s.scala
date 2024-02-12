@@ -1,4 +1,4 @@
-package com.sameera.jobsboard.foundations
+package com.sameera.foundations
 
 import cats.*
 import cats.effect.*
